@@ -72,6 +72,9 @@ export default async function handler(req, res) {
         const custom = ctx.custom || {};
         const description =
           custom.description ||
+          custom.Description ||
+          ctx.description ||
+          ctx.Description ||
           custom.caption ||
           ctx.caption ||
           ctx.alt ||

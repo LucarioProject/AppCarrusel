@@ -236,7 +236,7 @@ function toggleFullscreen() {
 
 function startAutoplay() {
   if (autoplayInterval || photos.length <= 1) return;
-  autoplayInterval = setInterval(nextPhoto, 3500);
+  autoplayInterval = setInterval(nextPhoto, 5000);
   $("#btn-play").textContent = "Pausar";
 }
 

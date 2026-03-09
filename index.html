@@ -59,6 +59,7 @@
                 class="textarea"
                 placeholder="Escribe una nota o descripción para esta foto..."
                 rows="3"
+                required
               ></textarea>
             </div>
 
@@ -80,9 +81,6 @@
                 Navega por tus fotos guardadas en la nube (Cloudinary). Los datos del carrusel se recuerdan en este dispositivo.
               </p>
             </div>
-            <button id="btn-clear" class="btn-ghost" type="button">
-              Borrar todas
-            </button>
           </div>
 
           <div id="empty-state" class="empty-state">
@@ -115,9 +113,7 @@
       </section>
     </main>
 
-    <footer class="app-footer">
-      <span>Hecho con ♥, usando Cloudinary y sin backend propio.</span>
-    </footer>
+    <footer class="app-footer"></footer>
   </div>
 
   <script src="app.js"></script>

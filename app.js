@@ -7,7 +7,7 @@ const STORE_NAME = "photos";
 // Cambia CLOUD_NAME y UPLOAD_PRESET por los de tu cuenta/preset.
 const CLOUD_NAME = "dtrvc1cpz"; // tu cloud name
 const UPLOAD_PRESET = "appcarrusel_unsigned"; // nombre del upload preset SIN firmar
-const MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024; // 2 MB
+const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
 
 let db;
 let photos = [];
@@ -232,7 +232,7 @@ function initForm() {
     }
 
     if (file.size > MAX_FILE_SIZE_BYTES) {
-      setMessage("La imagen no puede superar los 2 MB.", "error");
+      setMessage("La imagen no puede superar los 10 MB.", "error");
       input.value = "";
       previewContainer.classList.add("hidden");
       previewImg.removeAttribute("src");
@@ -258,12 +258,16 @@ function initForm() {
     }
 
     if (file.size > MAX_FILE_SIZE_BYTES) {
-      setMessage("La imagen no puede superar los 2 MB.", "error");
+      setMessage("La imagen no puede superar los 10 MB.", "error");
       return;
     }
 
     try {
       const description = $("#description-input").value.trim();
+      if (!description) {
+        setMessage("Agrega una descripción para la foto.", "error");
+        return;
+      }
       const createdAt = Date.now();
 
       // 1) Subir a Cloudinary
@@ -313,24 +317,6 @@ function initCarousel() {
       stopAutoplay();
     } else {
       startAutoplay();
-    }
-  });
-
-  $("#btn-clear").addEventListener("click", async () => {
-    if (!photos.length) return;
-    const confirmClear = window.confirm(
-      "Esto borrará todas las fotos guardadas en este navegador. ¿Continuar?"
-    );
-    if (!confirmClear) return;
-
-    try {
-      await clearAllPhotosFromDb();
-      photos = [];
-      currentIndex = 0;
-      updateCarouselControls();
-    } catch (err) {
-      console.error(err);
-      alert("No se pudieron borrar las fotos. Intenta de nuevo.");
     }
   });
 }

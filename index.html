@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AppCarrusel</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="brand">
+        <span class="brand-logo">◎</span>
+        <span class="brand-text">AppCarrusel</span>
+      </div>
+      <nav class="nav">
+        <button id="nav-upload" class="nav-btn nav-btn-active">Subir foto</button>
+        <button id="nav-carousel" class="nav-btn">Carrusel</button>
+      </nav>
+    </header>
+
+    <main class="app-main">
+      <section id="view-upload" class="view view-active">
+        <div class="card">
+          <h1 class="card-title">Nueva foto</h1>
+          <p class="card-subtitle">
+            Toma una foto o súbela desde tu galería, agrega una descripción y guárdala en tu carrusel.
+          </p>
+
+          <form id="upload-form" class="form">
+            <div class="form-group">
+              <label for="photo-input" class="form-label">Foto</label>
+              <div class="file-input-wrapper">
+                <input
+                  id="photo-input"
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  class="file-input"
+                  required
+                />
+                <span class="file-input-label">Elegir foto o usar cámara</span>
+              </div>
+              <p class="field-hint">
+                Las fotos se suben de forma segura a Cloudinary (máximo 2&nbsp;MB por imagen).
+              </p>
+              <div id="photo-preview-container" class="photo-preview hidden">
+                <img id="photo-preview" alt="Vista previa" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="description-input" class="form-label">Descripción</label>
+              <textarea
+                id="description-input"
+                class="textarea"
+                placeholder="Escribe una nota o descripción para esta foto..."
+                rows="3"
+              ></textarea>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn-primary">Guardar en carrusel</button>
+            </div>
+
+            <p id="upload-message" class="message"></p>
+          </form>
+        </div>
+      </section>
+
+      <section id="view-carousel" class="view">
+        <div class="card card-full">
+          <div class="card-header-row">
+            <div>
+              <h1 class="card-title">Mi carrusel</h1>
+              <p class="card-subtitle">
+                Navega por tus fotos guardadas en la nube (Cloudinary). Los datos del carrusel se recuerdan en este dispositivo.
+              </p>
+            </div>
+            <button id="btn-clear" class="btn-ghost" type="button">
+              Borrar todas
+            </button>
+          </div>
+
+          <div id="empty-state" class="empty-state">
+            <div class="empty-icon">📷</div>
+            <p class="empty-title">Aún no hay fotos</p>
+            <p class="empty-text">Sube tu primera foto en la pestaña "Subir foto".</p>
+          </div>
+
+          <div id="carousel-container" class="carousel hidden">
+            <div class="carousel-image-wrapper">
+              <img id="carousel-image" alt="Foto del carrusel" />
+              <div class="carousel-badge">
+                <span id="carousel-index">1</span>
+                <span>/</span>
+                <span id="carousel-total">1</span>
+              </div>
+            </div>
+            <div class="carousel-info">
+              <p id="carousel-description" class="carousel-description"></p>
+              <p id="carousel-date" class="carousel-date"></p>
+            </div>
+
+            <div class="carousel-controls">
+              <button id="btn-prev" class="btn-secondary" type="button">Anterior</button>
+              <button id="btn-play" class="btn-secondary" type="button">Reproducir</button>
+              <button id="btn-next" class="btn-secondary" type="button">Siguiente</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <span>Hecho con ♥, usando Cloudinary y sin backend propio.</span>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
+

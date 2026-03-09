@@ -197,6 +197,16 @@ body {
   margin-bottom: 12px;
 }
 
+.brand-mark {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  border-radius: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: radial-gradient(circle at center, #020617, #020617);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.9);
+}
+
 .form {
   position: relative;
   margin-top: 18px;

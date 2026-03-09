@@ -8,6 +8,8 @@ const STORE_NAME = "photos";
 const CLOUD_NAME = "dtrvc1cpz"; // tu cloud name
 const UPLOAD_PRESET = "appcarrusel_unsigned"; // nombre del upload preset SIN firmar
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
+const MAX_DESC_LENGTH = 60;
+const EMOJI_REGEX = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu;
 // URL opcional de un backend seguro que lista fotos desde Cloudinary.
 // En Vercel, si el front y el API viven juntos, basta con usar la ruta relativa:
 const BACKEND_LIST_URL = "/api/photos";
@@ -257,6 +259,8 @@ function initForm() {
   const input = $("#photo-input");
   const previewContainer = $("#photo-preview-container");
   const previewImg = $("#photo-preview");
+  const descInput = $("#description-input");
+  const descCounter = $("#description-counter");
 
   const wrapper = document.getElementById("file-input-wrapper");
   if (wrapper && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -271,6 +275,29 @@ function initForm() {
         stream.getTracks().forEach((t) => t.stop());
       } catch (err) {
         console.warn("No se pudo acceder a la cámara:", err);
+      }
+    });
+  }
+
+  if (descCounter) {
+    descCounter.textContent = `${MAX_DESC_LENGTH} caracteres restantes`;
+  }
+
+  if (descInput) {
+    descInput.addEventListener("input", () => {
+      let value = descInput.value || "";
+      // quitar emojis
+      value = value.replace(EMOJI_REGEX, "");
+      // limitar longitud
+      if (value.length > MAX_DESC_LENGTH) {
+        value = value.slice(0, MAX_DESC_LENGTH);
+      }
+      if (value !== descInput.value) {
+        descInput.value = value;
+      }
+      if (descCounter) {
+        const remaining = MAX_DESC_LENGTH - value.length;
+        descCounter.textContent = `${remaining} caracteres restantes`;
       }
     });
   }
@@ -316,7 +343,7 @@ function initForm() {
     }
 
     try {
-      const description = $("#description-input").value.trim();
+      const description = descInput ? descInput.value.trim() : "";
       if (!description) {
         setMessage("Agrega una descripción para la foto.", "error");
         return;

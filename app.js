@@ -8,6 +8,9 @@ const STORE_NAME = "photos";
 const CLOUD_NAME = "dtrvc1cpz"; // tu cloud name
 const UPLOAD_PRESET = "appcarrusel_unsigned"; // nombre del upload preset SIN firmar
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
+// URL opcional de un backend seguro que lista fotos desde Cloudinary.
+// En Vercel, si el front y el API viven juntos, basta con usar la ruta relativa:
+const BACKEND_LIST_URL = "/api/photos";
 
 let db;
 let photos = [];
@@ -106,10 +109,14 @@ function setMessage(text, type) {
   if (type === "error") el.classList.add("message-error");
 }
 
-function uploadToCloudinary(file) {
+function uploadToCloudinary(file, description) {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("upload_preset", UPLOAD_PRESET);
+  if (description) {
+    // Guarda la descripción como contexto en Cloudinary para poder leerla luego desde el backend
+    formData.append("context", `description=${description}`);
+  }
 
   return fetch(
     `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
@@ -198,6 +205,34 @@ function prevPhoto() {
   updateCarouselControls();
 }
 
+function toggleFullscreen() {
+  const container = document.getElementById("carousel-container");
+  if (!container) return;
+
+  const fsElement =
+    document.fullscreenElement ||
+    document.webkitFullscreenElement ||
+    document.msFullscreenElement;
+
+  if (!fsElement) {
+    if (container.requestFullscreen) {
+      container.requestFullscreen();
+    } else if (container.webkitRequestFullscreen) {
+      container.webkitRequestFullscreen();
+    } else if (container.msRequestFullscreen) {
+      container.msRequestFullscreen();
+    }
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) {
+      document.msExitFullscreen();
+    }
+  }
+}
+
 function startAutoplay() {
   if (autoplayInterval || photos.length <= 1) return;
   autoplayInterval = setInterval(nextPhoto, 3500);
@@ -270,8 +305,8 @@ function initForm() {
       }
       const createdAt = Date.now();
 
-      // 1) Subir a Cloudinary
-      const cloudinaryResult = await uploadToCloudinary(file);
+      // 1) Subir a Cloudinary (incluyendo descripción como contexto)
+      const cloudinaryResult = await uploadToCloudinary(file, description);
 
       // 2) Guardar solo metadatos + URL en IndexedDB (sin el blob grande)
       const saved = await savePhotoToDb({
@@ -319,6 +354,13 @@ function initCarousel() {
       startAutoplay();
     }
   });
+
+  const fullscreenBtn = document.getElementById("btn-fullscreen");
+  if (fullscreenBtn) {
+    fullscreenBtn.addEventListener("click", () => {
+      toggleFullscreen();
+    });
+  }
 }
 
 async function bootstrap() {
@@ -329,6 +371,30 @@ async function bootstrap() {
     updateCarouselControls();
   } catch (err) {
     console.error("No se pudo inicializar la base local:", err);
+  }
+
+  // Si se configuró un backend seguro, sincronizamos periódicamente con Cloudinary
+  if (BACKEND_LIST_URL) {
+    const syncFromBackend = async () => {
+      try {
+        const res = await fetch(BACKEND_LIST_URL);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!Array.isArray(data)) return;
+
+        photos = data;
+        if (currentIndex >= photos.length) {
+          currentIndex = Math.max(photos.length - 1, 0);
+        }
+        updateCarouselControls();
+      } catch (err) {
+        console.error("No se pudieron sincronizar las fotos remotas:", err);
+      }
+    };
+
+    // Primero intento inmediato y luego cada 15 segundos
+    await syncFromBackend();
+    setInterval(syncFromBackend, 15000);
   }
 
   initNav();

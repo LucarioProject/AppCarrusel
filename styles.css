@@ -428,7 +428,48 @@ body {
   overflow: hidden;
   border: 1px solid rgba(56, 189, 248, 0.5);
   background: radial-gradient(circle at center, #020617, #020617);
-  max-height: 360px;
+  max-height: min(70vh, 640px);
+}
+
+.btn-icon {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  background: rgba(15, 23, 42, 0.9);
+  color: var(--text-primary);
+  font-size: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(14px);
+  transition: background-color var(--transition-fast),
+    border-color var(--transition-fast), transform var(--transition-fast),
+    box-shadow var(--transition-fast), color var(--transition-fast);
+}
+
+.btn-icon:hover {
+  background: rgba(15, 23, 42, 0.98);
+  border-color: rgba(56, 189, 248, 0.9);
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.9);
+  transform: translateY(-0.5px);
+}
+
+#carousel-container:fullscreen {
+  background: #020617;
+  padding: 12px 8px 16px;
+}
+
+#carousel-container:fullscreen .carousel-image-wrapper {
+  max-height: calc(100vh - 150px);
+}
+
+#carousel-container:fullscreen .carousel-info {
+  padding-top: 10px;
 }
 
 .carousel-image-wrapper img {
@@ -511,7 +552,7 @@ body {
   }
 
   .carousel-image-wrapper {
-    max-height: 280px;
+    max-height: 60vh;
   }
 }
 

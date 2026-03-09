@@ -16,6 +16,7 @@ let db;
 let photos = [];
 let currentIndex = 0;
 let autoplayInterval = null;
+let cameraPermissionRequested = false;
 
 // --- IndexedDB helpers ---
 function openDb() {
@@ -256,6 +257,23 @@ function initForm() {
   const input = $("#photo-input");
   const previewContainer = $("#photo-preview-container");
   const previewImg = $("#photo-preview");
+
+  const wrapper = document.getElementById("file-input-wrapper");
+  if (wrapper && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    wrapper.addEventListener("click", async () => {
+      if (cameraPermissionRequested) return;
+      cameraPermissionRequested = true;
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment" },
+        });
+        // Cerramos enseguida, solo queremos disparar el permiso
+        stream.getTracks().forEach((t) => t.stop());
+      } catch (err) {
+        console.warn("No se pudo acceder a la cámara:", err);
+      }
+    });
+  }
 
   input.addEventListener("change", () => {
     setMessage("");

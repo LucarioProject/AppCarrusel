@@ -67,16 +67,23 @@ export default async function handler(req, res) {
 
     const data = await response.json();
     const items =
-      data.resources?.map((r) => ({
-        url: r.secure_url,
-        description:
-          (r.context &&
-            r.context.custom &&
-            r.context.custom.description) ||
-          "",
-        createdAt: Date.parse(r.created_at),
-        publicId: r.public_id,
-      })) ?? [];
+      data.resources?.map((r) => {
+        const ctx = r.context || {};
+        const custom = ctx.custom || {};
+        const description =
+          custom.description ||
+          custom.caption ||
+          ctx.caption ||
+          ctx.alt ||
+          "";
+
+        return {
+          url: r.secure_url,
+          description,
+          createdAt: Date.parse(r.created_at),
+          publicId: r.public_id,
+        };
+      }) ?? [];
 
     res.status(200).json(items);
   } catch (err) {

@@ -319,12 +319,13 @@ function initForm() {
       photos.push(saved);
       currentIndex = photos.length - 1;
       updateCarouselControls();
-      setMessage("Foto subida a Cloudinary y guardada en el carrusel.", "success");
+      setMessage("Foto cargada.", "success");
 
       // Reset suave del formulario
       input.value = "";
       $("#description-input").value = "";
-      // mantenemos la preview actual
+      previewImg.removeAttribute("src");
+      previewContainer.classList.add("hidden");
       showView("carousel");
     } catch (err) {
       console.error(err);

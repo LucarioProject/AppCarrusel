@@ -53,6 +53,7 @@ export default async function handler(req, res) {
           expression,
           max_results: 100,
           sort_by: [{ created_at: "asc" }],
+          with_field: "context",
         }),
       }
     );

@@ -110,9 +110,9 @@ body {
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color var(--transition-fast),
-    color var(--transition-fast), transform var(--transition-fast),
-    box-shadow var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.22s ease, color 0.22s ease, transform 0.22s ease,
+    box-shadow 0.22s ease, filter 0.22s ease;
 }
 
 .nav-btn:hover {
@@ -130,15 +130,39 @@ body {
 .app-main {
   flex: 1;
   display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.view-stack {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  width: 100%;
+  min-height: 0;
+  flex: 1;
 }
 
 .view {
-  display: none;
+  grid-column: 1;
+  grid-row: 1;
   width: 100%;
+  min-width: 0;
+  align-self: start;
+  position: relative;
+  opacity: 0;
+  transform: translate3d(10px, 0, 0);
+  pointer-events: none;
+  transition: opacity 0.32s ease-out, transform 0.32s ease-out;
+  will-change: opacity, transform;
+  z-index: 0;
 }
 
-.view-active {
-  display: block;
+.view.view-active {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  pointer-events: auto;
+  z-index: 1;
 }
 
 .card {
@@ -368,14 +392,20 @@ body {
 }
 
 .btn-spinner {
-  display: block;
+  display: none;
   width: 16px;
   height: 16px;
+  box-sizing: border-box;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-top-color: #fff;
   border-radius: 50%;
-  animation: btn-spin 0.65s linear infinite;
   flex-shrink: 0;
+  animation: none;
+}
+
+.btn-primary.is-loading .btn-spinner {
+  display: block;
+  animation: btn-spin 0.65s linear infinite;
 }
 
 .btn-primary:disabled,
@@ -432,10 +462,29 @@ body {
   border-color: rgba(248, 113, 113, 0.8);
 }
 
-.message {
-  min-height: 18px;
+.message-row {
+  min-height: 24px;
+  margin-top: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+#upload-message {
+  min-height: 1.2em;
+  display: block;
   font-size: 13px;
-  margin: 4px 0 0;
+  margin: 0;
+}
+
+#upload-message.message-success {
+  color: #4ade80;
+  transform: translate3d(0, 0, 0);
+  transition: opacity 0.4s ease, transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#upload-message.message-dismissing {
+  opacity: 0;
+  transform: translate3d(32px, 0, 0);
 }
 
 .message-success {
@@ -444,6 +493,27 @@ body {
 
 .message-error {
   color: var(--danger);
+}
+
+.nav-btn,
+.view,
+#upload-message.message-success {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view {
+    transition-duration: 0.01s;
+  }
+  #upload-message.message-success,
+  #upload-message.message-dismissing {
+    transition-duration: 0.01s;
+  }
+  .btn-primary.is-loading .btn-spinner {
+    animation: none;
+    border-color: rgba(255, 255, 255, 0.5);
+  }
 }
 
 .empty-state {

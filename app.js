@@ -105,12 +105,42 @@ function $(selector) {
   return document.querySelector(selector);
 }
 
+let successDismissTimer = null;
+let onSuccessMessageTransitionEnd = null;
+
 function setMessage(text, type) {
   const el = $("#upload-message");
+  if (successDismissTimer) {
+    clearTimeout(successDismissTimer);
+    successDismissTimer = null;
+  }
+  if (onSuccessMessageTransitionEnd) {
+    el.removeEventListener("transitionend", onSuccessMessageTransitionEnd);
+    onSuccessMessageTransitionEnd = null;
+  }
+
+  el.classList.remove("message-success", "message-error", "message-dismissing");
   el.textContent = text || "";
-  el.classList.remove("message-success", "message-error");
-  if (type === "success") el.classList.add("message-success");
-  if (type === "error") el.classList.add("message-error");
+  if (!text) {
+    return;
+  }
+  if (type === "success") {
+    el.classList.add("message-success");
+    successDismissTimer = setTimeout(() => {
+      el.classList.add("message-dismissing");
+    }, 2200);
+    onSuccessMessageTransitionEnd = (e) => {
+      if (e.target !== el) return;
+      if (e.propertyName !== "transform") return;
+      el.classList.remove("message-success", "message-dismissing");
+      el.textContent = "";
+      el.removeEventListener("transitionend", onSuccessMessageTransitionEnd);
+      onSuccessMessageTransitionEnd = null;
+    };
+    el.addEventListener("transitionend", onSuccessMessageTransitionEnd);
+  } else if (type === "error") {
+    el.classList.add("message-error");
+  }
 }
 
 function setUploadFormBusy(loading) {
@@ -122,15 +152,7 @@ function setUploadFormBusy(loading) {
     btn.disabled = loading;
     btn.setAttribute("aria-busy", loading ? "true" : "false");
     btn.classList.toggle("is-loading", loading);
-    const spinner = btn.querySelector(".btn-spinner");
     const text = btn.querySelector(".btn-text");
-    if (spinner) {
-      if (loading) {
-        spinner.removeAttribute("hidden");
-      } else {
-        spinner.setAttribute("hidden", "");
-      }
-    }
     if (text) text.textContent = loading ? "Subiendo…" : "Guardar foto";
   }
   if (input) input.disabled = loading;
@@ -173,6 +195,11 @@ function showView(view) {
 
   uploadBtn.classList.toggle("nav-btn-active", isUpload);
   carouselBtn.classList.toggle("nav-btn-active", !isUpload);
+
+  if ("inert" in uploadView) {
+    uploadView.inert = !isUpload;
+    carouselView.inert = isUpload;
+  }
 }
 
 function updateCarouselControls() {
@@ -361,7 +388,7 @@ function initForm() {
 
     const file = input.files && input.files[0];
     if (!file) {
-      setMessage("Primero selecciona o toma una foto.", "error");
+      setMessage("Debe tomar una foto", "error");
       return;
     }
 
@@ -398,12 +425,11 @@ function initForm() {
       updateCarouselControls();
       setMessage("Foto cargada.", "success");
 
-      // Reset suave del formulario
+      // Reset suave del formulario (se mantiene en la pestaña Subir foto)
       input.value = "";
       $("#description-input").value = "";
       previewImg.removeAttribute("src");
       previewContainer.classList.add("hidden");
-      showView("carousel");
     } catch (err) {
       console.error(err);
       setMessage(
@@ -481,6 +507,7 @@ async function bootstrap() {
   initNav();
   initForm();
   initCarousel();
+  showView("upload");
 }
 
 document.addEventListener("DOMContentLoaded", bootstrap);

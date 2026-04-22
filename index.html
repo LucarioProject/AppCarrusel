@@ -23,6 +23,7 @@
     </header>
 
     <main class="app-main">
+      <div class="view-stack">
       <section id="view-upload" class="view view-active">
         <div class="card">
           <div class="card-header-row">
@@ -35,7 +36,7 @@
             <img src="marca.png" alt="Marca" class="brand-mark" />
           </div>
 
-          <form id="upload-form" class="form">
+          <form id="upload-form" class="form" novalidate>
             <div class="form-group">
               <label for="photo-input" class="form-label">Foto</label>
               <div id="file-input-wrapper" class="file-input-wrapper">
@@ -45,7 +46,6 @@
                   accept="image/*"
                   capture="environment"
                   class="file-input"
-                  required
                 />
                 <span class="file-input-label">
                   Tomar foto
@@ -80,19 +80,20 @@
                 class="textarea"
                 placeholder="Escribe una nota o descripción para esta foto..."
                 rows="3"
-                required
               ></textarea>
               <p id="description-counter" class="field-hint"></p>
             </div>
 
             <div class="form-actions">
               <button type="submit" class="btn-primary" id="upload-submit" aria-busy="false">
-                <span class="btn-spinner" hidden></span>
+                <span class="btn-spinner" aria-hidden="true"></span>
                 <span class="btn-text">Guardar foto</span>
               </button>
             </div>
 
-            <p id="upload-message" class="message"></p>
+            <div class="message-row">
+              <p id="upload-message" class="message"></p>
+            </div>
           </form>
         </div>
       </section>
@@ -136,6 +137,7 @@
           </div>
         </div>
       </section>
+      </div>
     </main>
 
     <footer class="app-footer"></footer>

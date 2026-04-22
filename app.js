@@ -128,7 +128,7 @@ function setMessage(text, type) {
     el.classList.add("message-success");
     successDismissTimer = setTimeout(() => {
       el.classList.add("message-dismissing");
-    }, 2200);
+    }, 5000);
     onSuccessMessageTransitionEnd = (e) => {
       if (e.target !== el) return;
       if (e.propertyName !== "transform") return;
@@ -423,7 +423,7 @@ function initForm() {
       photos.push(saved);
       currentIndex = photos.length - 1;
       updateCarouselControls();
-      setMessage("Foto cargada.", "success");
+      setMessage("Foto cargada, ve a carrusel para verla", "success");
 
       // Reset suave del formulario (se mantiene en la pestaña Subir foto)
       input.value = "";

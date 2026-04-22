@@ -263,6 +263,21 @@ body {
 .file-input-label {
   font-size: 14px;
   color: var(--text-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.file-input-icon {
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
+.file-input-wrapper.is-disabled {
+  opacity: 0.6;
+  pointer-events: none;
+  cursor: not-allowed;
 }
 
 .field-hint {
@@ -344,6 +359,40 @@ body {
 .btn-primary:active {
   transform: translateY(0);
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.9);
+}
+
+@keyframes btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.btn-spinner {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: btn-spin 0.65s linear infinite;
+  flex-shrink: 0;
+}
+
+.btn-primary:disabled,
+.btn-primary.is-loading {
+  cursor: wait;
+  transform: none;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.85);
+  filter: none;
+  opacity: 0.95;
+  pointer-events: none;
+}
+
+.btn-primary:disabled:hover,
+.btn-primary.is-loading:hover {
+  transform: none;
+  filter: none;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.85);
 }
 
 .btn-secondary,

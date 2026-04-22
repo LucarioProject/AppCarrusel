@@ -19,6 +19,7 @@ let photos = [];
 let currentIndex = 0;
 let autoplayInterval = null;
 let cameraPermissionRequested = false;
+let uploadInProgress = false;
 
 // --- IndexedDB helpers ---
 function openDb() {
@@ -110,6 +111,31 @@ function setMessage(text, type) {
   el.classList.remove("message-success", "message-error");
   if (type === "success") el.classList.add("message-success");
   if (type === "error") el.classList.add("message-error");
+}
+
+function setUploadFormBusy(loading) {
+  const btn = $("#upload-submit");
+  const input = $("#photo-input");
+  const desc = $("#description-input");
+  const wrapper = $("#file-input-wrapper");
+  if (btn) {
+    btn.disabled = loading;
+    btn.setAttribute("aria-busy", loading ? "true" : "false");
+    btn.classList.toggle("is-loading", loading);
+    const spinner = btn.querySelector(".btn-spinner");
+    const text = btn.querySelector(".btn-text");
+    if (spinner) {
+      if (loading) {
+        spinner.removeAttribute("hidden");
+      } else {
+        spinner.setAttribute("hidden", "");
+      }
+    }
+    if (text) text.textContent = loading ? "Subiendo…" : "Guardar foto";
+  }
+  if (input) input.disabled = loading;
+  if (desc) desc.disabled = loading;
+  if (wrapper) wrapper.classList.toggle("is-disabled", loading);
 }
 
 function uploadToCloudinary(file, description) {
@@ -265,6 +291,7 @@ function initForm() {
   const wrapper = document.getElementById("file-input-wrapper");
   if (wrapper && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     wrapper.addEventListener("click", async () => {
+      if (uploadInProgress) return;
       if (cameraPermissionRequested) return;
       cameraPermissionRequested = true;
       try {
@@ -329,6 +356,7 @@ function initForm() {
 
   $("#upload-form").addEventListener("submit", async (e) => {
     e.preventDefault();
+    if (uploadInProgress) return;
     setMessage("");
 
     const file = input.files && input.files[0];
@@ -342,12 +370,16 @@ function initForm() {
       return;
     }
 
+    const description = descInput ? descInput.value.trim() : "";
+    if (!description) {
+      setMessage("Agrega una descripción para la foto.", "error");
+      return;
+    }
+
+    uploadInProgress = true;
+    setUploadFormBusy(true);
+
     try {
-      const description = descInput ? descInput.value.trim() : "";
-      if (!description) {
-        setMessage("Agrega una descripción para la foto.", "error");
-        return;
-      }
       const createdAt = Date.now();
 
       // 1) Subir a Cloudinary (incluyendo descripción como contexto)
@@ -378,6 +410,9 @@ function initForm() {
         "Ocurrió un error al subir o guardar la foto.",
         "error"
       );
+    } finally {
+      uploadInProgress = false;
+      setUploadFormBusy(false);
     }
   });
 }

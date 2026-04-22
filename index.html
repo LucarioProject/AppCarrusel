@@ -47,7 +47,26 @@
                   class="file-input"
                   required
                 />
-                <span class="file-input-label">Elegir foto o usar cámara</span>
+                <span class="file-input-label">
+                  Tomar foto
+                  <svg
+                    class="file-input-icon"
+                    viewBox="0 0 24 24"
+                    width="18"
+                    height="18"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"
+                    />
+                    <circle cx="12" cy="13" r="4" />
+                  </svg>
+                </span>
               </div>
               <div id="photo-preview-container" class="photo-preview hidden">
                 <img id="photo-preview" alt="Vista previa" />
@@ -67,7 +86,10 @@
             </div>
 
             <div class="form-actions">
-              <button type="submit" class="btn-primary">Guardar en carrusel</button>
+              <button type="submit" class="btn-primary" id="upload-submit" aria-busy="false">
+                <span class="btn-spinner" hidden></span>
+                <span class="btn-text">Guardar foto</span>
+              </button>
             </div>
 
             <p id="upload-message" class="message"></p>

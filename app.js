@@ -128,7 +128,7 @@ function setMessage(text, type) {
     el.classList.add("message-success");
     successDismissTimer = setTimeout(() => {
       el.classList.add("message-dismissing");
-    }, 5000);
+    }, 25000);
     onSuccessMessageTransitionEnd = (e) => {
       if (e.target !== el) return;
       if (e.propertyName !== "transform") return;

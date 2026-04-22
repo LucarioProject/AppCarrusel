@@ -127,17 +127,17 @@ function setMessage(text, type) {
   if (type === "success") {
     el.classList.add("message-success");
     successDismissTimer = setTimeout(() => {
+      onSuccessMessageTransitionEnd = (e) => {
+        if (e.target !== el) return;
+        if (e.propertyName !== "transform") return;
+        el.classList.remove("message-success", "message-dismissing");
+        el.textContent = "";
+        el.removeEventListener("transitionend", onSuccessMessageTransitionEnd);
+        onSuccessMessageTransitionEnd = null;
+      };
+      el.addEventListener("transitionend", onSuccessMessageTransitionEnd);
       el.classList.add("message-dismissing");
-    }, 25000);
-    onSuccessMessageTransitionEnd = (e) => {
-      if (e.target !== el) return;
-      if (e.propertyName !== "transform") return;
-      el.classList.remove("message-success", "message-dismissing");
-      el.textContent = "";
-      el.removeEventListener("transitionend", onSuccessMessageTransitionEnd);
-      onSuccessMessageTransitionEnd = null;
-    };
-    el.addEventListener("transitionend", onSuccessMessageTransitionEnd);
+    }, 5000);
   } else if (type === "error") {
     el.classList.add("message-error");
   }
@@ -357,7 +357,6 @@ function initForm() {
   }
 
   input.addEventListener("change", () => {
-    setMessage("");
     const file = input.files && input.files[0];
     if (!file) {
       previewContainer.classList.add("hidden");
@@ -365,6 +364,7 @@ function initForm() {
       return;
     }
 
+    setMessage("");
     if (file.size > MAX_FILE_SIZE_BYTES) {
       setMessage("La imagen no puede superar los 10 MB.", "error");
       input.value = "";
@@ -423,13 +423,15 @@ function initForm() {
       photos.push(saved);
       currentIndex = photos.length - 1;
       updateCarouselControls();
-      setMessage("Foto cargada, ve a carrusel para verla", "success");
 
-      // Reset suave del formulario (se mantiene en la pestaña Subir foto)
+      // Reset del formulario antes del mensaje: vaciar el input dispara "change"
+      // y el listener no debe borrar el aviso de éxito (setMessage va al final).
       input.value = "";
       $("#description-input").value = "";
       previewImg.removeAttribute("src");
       previewContainer.classList.add("hidden");
+
+      setMessage("Foto cargada, ve a carrusel para verla", "success");
     } catch (err) {
       console.error(err);
       setMessage(
